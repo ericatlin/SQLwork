@@ -142,8 +142,8 @@
 --group by o.CustomerID
 --order by SUM(od.UnitPrice * od.Quantity*(1 - od.Discount))
 --desc offset 0 rows fetch first 3 rows only
--- 找出有敗過銷售金額前三高個產品所屬類別的前三個大客戶
 
+-- 找出有敗過銷售金額前三高個產品所屬類別的前三個大客戶
 --SELECT o.CustomerID
 --FROM Products p 
 --INNER JOIN (
@@ -161,7 +161,6 @@
 --OFFSET 0 ROWS FETCH FIRST 3 ROWS ONLY
 
 -- 列出消費總金額高於所有客戶平均消費總金額的客戶的名字，以及客戶的消費總金額
-
 --SELECT CustomerID, allcost
 --FROM (
 --	SELECT o.CustomerID, SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) AS allcost, AVG(SUM(od.UnitPrice * od.Quantity * (1 - od.Discount))) OVER() AS costavg
@@ -172,34 +171,32 @@
 --WHERE allcost > costavg
 
 -- 列出最熱銷的產品，以及被購買的總金額
-select * from Customers;
-select * from Products;
-select * from [Order Details];
-select * from Orders;
+--select p.ProductID,sum(od.Quantity * od.Discount * od.UnitPrice) as allcost
+--from Products p
+--inner join [Order Details] od on p.ProductID = od.ProductID
+--group by p.ProductID
+--order by sum(od.Quantity) desc
+--offset 0 rows fetch first 1 rows only
 
-select p.ProductID,sum(od.Quantity * od.Discount * od.UnitPrice) as allcost
-from Products p
-inner join [Order Details] od on p.ProductID = od.ProductID
-group by p.ProductID
-order by sum(od.Quantity) desc
-offset 0 rows fetch first 1 rows only
 -- 列出最少人買的產品
-select p.ProductID from Products p
-inner join [Order Details] od on p.ProductID = od.productid 
-inner join Orders o on od.OrderID = o.OrderID 
-inner join Customers c on o.CustomerID = c.CustomerID
-group by p.ProductID
-order by COUNT(c.CustomerID)
-offset 0 rows fetch first 1 rows only
+--select p.ProductID from Products p
+--inner join [Order Details] od on p.ProductID = od.productid 
+--inner join Orders o on od.OrderID = o.OrderID 
+--inner join Customers c on o.CustomerID = c.CustomerID
+--group by p.ProductID
+--order by COUNT(c.CustomerID)
+--offset 0 rows fetch first 1 rows only
+
 -- 列出最沒人要買的產品類別 (Categories)
-select cate.CategoryName  from Categories cate
-inner join Products p on cate.CategoryID = p.CategoryID
-inner join [Order Details] od on p.ProductID = od.productid 
-inner join Orders o on od.OrderID = o.OrderID 
-inner join Customers c on o.CustomerID = c.CustomerID
-group by cate.CategoryName
-order by COUNT(c.CustomerID)
-offset 0 rows fetch first 1 rows only
+--select cate.CategoryName  from Categories cate
+--inner join Products p on cate.CategoryID = p.CategoryID
+--inner join [Order Details] od on p.ProductID = od.productid 
+--inner join Orders o on od.OrderID = o.OrderID 
+--inner join Customers c on o.CustomerID = c.CustomerID
+--group by cate.CategoryName
+--order by COUNT(c.CustomerID)
+--offset 0 rows fetch first 1 rows only
+
 -- 列出跟銷售最好的供應商買最多金額的客戶與購買金額 (含購買其它供應商的產品)
 
 -- 列出跟銷售最好的供應商買最多金額的客戶與購買金額 (不含購買其它供應商的產品)
