@@ -135,24 +135,71 @@
 --where p.ProductID in (select ProductID from Products order by UnitPrice desc offset 0 Rows fetch first 3 Rows only)
 --order by total desc
 --offset 0 Rows fetch first 3 rows only
-
-select * from Products
-select * from [Order Details]
-select * from Orders
 -- 找出有敗過銷售金額前三高個產品的前三個大客戶
-select * from (select ProductID from [Order Details] group by ProductID order by SUM(UnitPrice * Quantity*(1 - Discount)) desc offset 0 rows fetch first 3 rows only) as hightthree
-left join [Order Details] od on hightthree.ProductID = od.ProductID
-
+--select o.CustomerID from (select ProductID from [Order Details] group by ProductID order by SUM(UnitPrice * Quantity*(1 - Discount)) desc offset 0 rows fetch first 3 rows only) as hightthree
+--inner join [Order Details] od on hightthree.ProductID = od.ProductID
+--inner join Orders o on o.OrderID = od.OrderID
+--group by o.CustomerID
+--order by SUM(od.UnitPrice * od.Quantity*(1 - od.Discount))
+--desc offset 0 rows fetch first 3 rows only
 -- 找出有敗過銷售金額前三高個產品所屬類別的前三個大客戶
+
+--SELECT o.CustomerID
+--FROM Products p 
+--INNER JOIN (
+--	SELECT p.CategoryID
+--	FROM [Order Details] od
+--	INNER JOIN Products p ON p.ProductID = od.ProductID
+--	GROUP BY p.CategoryID
+--	ORDER BY SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC
+--	OFFSET 0 ROWS FETCH FIRST 3 ROWS ONLY
+--) AS highthree on p.CategoryID = highthree.CategoryID 
+--inner join [Order Details] od on p.ProductID = od.ProductID
+--inner join Orders o on od.OrderID = o.OrderID
+--group by o.CustomerID
+--order by SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) DESC
+--OFFSET 0 ROWS FETCH FIRST 3 ROWS ONLY
 
 -- 列出消費總金額高於所有客戶平均消費總金額的客戶的名字，以及客戶的消費總金額
 
+--SELECT CustomerID, allcost
+--FROM (
+--	SELECT o.CustomerID, SUM(od.UnitPrice * od.Quantity * (1 - od.Discount)) AS allcost, AVG(SUM(od.UnitPrice * od.Quantity * (1 - od.Discount))) OVER() AS costavg
+--	FROM Orders o 
+--	INNER JOIN [Order Details] od ON o.OrderID = od.OrderID
+--	GROUP BY o.CustomerID
+--) AS CustomerCost
+--WHERE allcost > costavg
+
 -- 列出最熱銷的產品，以及被購買的總金額
+select * from Customers;
+select * from Products;
+select * from [Order Details];
+select * from Orders;
 
+select p.ProductID,sum(od.Quantity * od.Discount * od.UnitPrice) as allcost
+from Products p
+inner join [Order Details] od on p.ProductID = od.ProductID
+group by p.ProductID
+order by sum(od.Quantity) desc
+offset 0 rows fetch first 1 rows only
 -- 列出最少人買的產品
-
+select p.ProductID from Products p
+inner join [Order Details] od on p.ProductID = od.productid 
+inner join Orders o on od.OrderID = o.OrderID 
+inner join Customers c on o.CustomerID = c.CustomerID
+group by p.ProductID
+order by COUNT(c.CustomerID)
+offset 0 rows fetch first 1 rows only
 -- 列出最沒人要買的產品類別 (Categories)
-
+select cate.CategoryName  from Categories cate
+inner join Products p on cate.CategoryID = p.CategoryID
+inner join [Order Details] od on p.ProductID = od.productid 
+inner join Orders o on od.OrderID = o.OrderID 
+inner join Customers c on o.CustomerID = c.CustomerID
+group by cate.CategoryName
+order by COUNT(c.CustomerID)
+offset 0 rows fetch first 1 rows only
 -- 列出跟銷售最好的供應商買最多金額的客戶與購買金額 (含購買其它供應商的產品)
 
 -- 列出跟銷售最好的供應商買最多金額的客戶與購買金額 (不含購買其它供應商的產品)
@@ -170,13 +217,13 @@ left join [Order Details] od on hightthree.ProductID = od.ProductID
 -- 列出每位員工的下屬的業績總金額
 
 -- 列出每家貨運公司運送最多的那一種產品類別與總數量
-select sh.ShipperID,p.CategoryID ,COUNT(p.ProductID)as categorirescount
-from Shippers sh
-inner join Orders o  on sh.ShipperID = o.ShipVia
-inner join [Order Details] od on o.OrderID = od.OrderID
-inner join Products p on od.ProductID =p.ProductID
-group by sh.ShipperID,p.CategoryID
-order by sh.ShipperID,p.CategoryID
+--select sh.ShipperID,p.CategoryID ,COUNT(p.ProductID)as categorirescount
+--from Shippers sh
+--inner join Orders o  on sh.ShipperID = o.ShipVia
+--inner join [Order Details] od on o.OrderID = od.OrderID
+--inner join Products p on od.ProductID =p.ProductID
+--group by sh.ShipperID,p.CategoryID
+--order by sh.ShipperID,p.CategoryID
 
 -- 列出每一個客戶買最多的產品類別與金額
 
